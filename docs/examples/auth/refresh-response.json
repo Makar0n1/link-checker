@@ -1,0 +1,5 @@
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJleHAiOjE3MDUzMTgwMDAsImlhdCI6MTcwNTMxNzEwMCwiaXNzIjoiYXV0aC1zZXJ2aWNlIn0.new_signature",
+  "refresh_token": "z6y5x4w3v2u1t0s9r8q7p6o5n4m3l2k1j0i9h8g7f6e5d4c3b2a1",
+  "expires_in": 900
+}
