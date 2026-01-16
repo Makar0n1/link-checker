@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,18 +13,39 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LayoutDashboard } from "lucide-react";
+import { useRegister } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const registerMutation = useRegister();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Mock registration - redirect to login
-    setTimeout(() => {
-      router.push("/login");
-    }, 1000);
+
+    if (password !== confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      toast({
+        variant: "destructive",
+        title: "Password too short",
+        description: "Password must be at least 8 characters",
+      });
+      return;
+    }
+
+    registerMutation.mutate({ email, password, name });
   };
 
   return (
@@ -43,7 +63,15 @@ export default function RegisterPage() {
             <label htmlFor="name" className="text-sm font-medium">
               Name
             </label>
-            <Input id="name" type="text" placeholder="John Doe" required />
+            <Input
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={registerMutation.isPending}
+              required
+            />
           </div>
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -53,6 +81,9 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="john@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={registerMutation.isPending}
               required
             />
           </div>
@@ -60,16 +91,34 @@ export default function RegisterPage() {
             <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
-            <Input id="password" type="password" required />
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={registerMutation.isPending}
+              required
+            />
           </div>
           <div className="space-y-2">
             <label htmlFor="confirmPassword" className="text-sm font-medium">
               Confirm Password
             </label>
-            <Input id="confirmPassword" type="password" required />
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={registerMutation.isPending}
+              required
+            />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={registerMutation.isPending}
+          >
+            {registerMutation.isPending ? "Creating account..." : "Create account"}
           </Button>
         </form>
       </CardContent>
