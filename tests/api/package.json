@@ -1,0 +1,20 @@
+{
+  "name": "link-checker-api-tests",
+  "version": "1.0.0",
+  "description": "API tests for Link Checker",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:auth": "vitest run --testNamePattern=Auth",
+    "test:backlinks": "vitest run --testNamePattern=Backlink"
+  },
+  "keywords": ["api", "testing", "vitest"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}
