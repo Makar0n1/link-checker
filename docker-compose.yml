@@ -1,0 +1,155 @@
+version: "3.8"
+
+services:
+  # =============================================================================
+  # Infrastructure
+  # =============================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: linktracker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-linktracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-linktracker_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-linktracker}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-linktracker}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - linktracker-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: linktracker-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - linktracker-network
+
+  # =============================================================================
+  # Services (will be added later)
+  # =============================================================================
+
+  # api-gateway:
+  #   build:
+  #     context: ./services/api-gateway
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # auth-service:
+  #   build:
+  #     context: ./services/auth-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # backlink-service:
+  #   build:
+  #     context: ./services/backlink-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8082:8082"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # index-service:
+  #   build:
+  #     context: ./services/index-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # health-service:
+  #   build:
+  #     context: ./services/health-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8084:8084"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # crawler-service:
+  #   build:
+  #     context: ./services/crawler-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8085:8085"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # scheduler-service:
+  #   build:
+  #     context: ./services/scheduler-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8086:8086"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - linktracker-network
+
+  # =============================================================================
+  # Frontend (will be added later)
+  # =============================================================================
+
+  # web-app:
+  #   build:
+  #     context: ./frontend/web-app
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - api-gateway
+  #   networks:
+  #     - linktracker-network
+
+networks:
+  linktracker-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
