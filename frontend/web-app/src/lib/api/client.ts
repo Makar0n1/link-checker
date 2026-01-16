@@ -1,7 +1,8 @@
 import type { AuthResponse, ApiError } from "@/types/api";
 
-const AUTH_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
-const BACKLINK_API_URL = process.env.NEXT_PUBLIC_BACKLINK_API_URL || "http://localhost:8082";
+// Use relative URLs in production (through nginx), absolute in development
+const AUTH_API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const BACKLINK_API_URL = process.env.NEXT_PUBLIC_BACKLINK_API_URL || "";
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = "access_token";
