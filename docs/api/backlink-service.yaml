@@ -1,0 +1,685 @@
+openapi: 3.0.3
+info:
+  title: Backlink Service API
+  description: Backlink monitoring and management service for Link Tracker
+  version: 1.0.0
+  contact:
+    name: Backend Team
+
+servers:
+  - url: http://localhost:8081
+    description: Local development
+  - url: http://backlink-service:8081
+    description: Docker internal
+
+tags:
+  - name: projects
+    description: Project management endpoints
+  - name: backlinks
+    description: Backlink management endpoints
+  - name: health
+    description: Health check endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - health
+      summary: Health check
+      operationId: health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /ready:
+    get:
+      tags:
+        - health
+      summary: Readiness check
+      operationId: ready
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+
+  /api/v1/projects:
+    get:
+      tags:
+        - projects
+      summary: List user projects
+      operationId: listProjects
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - projects
+      summary: Create project
+      operationId: createProject
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/projects/{id}:
+    get:
+      tags:
+        - projects
+      summary: Get project by ID
+      operationId: getProject
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - projects
+      summary: Update project
+      operationId: updateProject
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - projects
+      summary: Delete project
+      operationId: deleteProject
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Project deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/backlinks:
+    get:
+      tags:
+        - backlinks
+      summary: List backlinks with filters and pagination
+      operationId: listBacklinks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Filter by project ID (required)
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/LinkStatus'
+        - name: link_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/LinkType'
+        - name: source_url
+          in: query
+          schema:
+            type: string
+          description: Filter by source URL (partial match)
+        - name: target_url
+          in: query
+          schema:
+            type: string
+          description: Filter by target URL (partial match)
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Paginated list of backlinks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBacklinks'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - backlinks
+      summary: Create backlink
+      operationId: createBacklink
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBacklinkRequest'
+      responses:
+        '201':
+          description: Backlink created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacklinkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/backlinks/{id}:
+    get:
+      tags:
+        - backlinks
+      summary: Get backlink by ID
+      operationId: getBacklink
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Backlink details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacklinkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - backlinks
+      summary: Update backlink
+      operationId: updateBacklink
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBacklinkRequest'
+      responses:
+        '200':
+          description: Backlink updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacklinkResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - backlinks
+      summary: Delete backlink
+      operationId: deleteBacklink
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Backlink deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/backlinks/bulk:
+    post:
+      tags:
+        - backlinks
+      summary: Bulk create backlinks
+      operationId: bulkCreateBacklinks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateBacklinksRequest'
+      responses:
+        '201':
+          description: Bulk operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkOperationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags:
+        - backlinks
+      summary: Bulk delete backlinks
+      operationId: bulkDeleteBacklinks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteBacklinksRequest'
+      responses:
+        '200':
+          description: Bulk operation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkOperationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/backlinks/import:
+    post:
+      tags:
+        - backlinks
+      summary: Import backlinks from Google Sheets
+      operationId: importBacklinks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportFromSheetsRequest'
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkOperationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '501':
+          description: Not implemented
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    LinkStatus:
+      type: string
+      enum:
+        - pending
+        - active
+        - broken
+        - removed
+        - nofollow
+
+    LinkType:
+      type: string
+      enum:
+        - dofollow
+        - nofollow
+        - sponsored
+        - ugc
+
+    CreateProjectRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: My SEO Project
+        google_sheet_id:
+          type: string
+          example: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        google_sheet_id:
+          type: string
+
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        user_id:
+          type: integer
+          format: int64
+        google_sheet_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CreateBacklinkRequest:
+      type: object
+      required:
+        - project_id
+        - source_url
+        - target_url
+      properties:
+        project_id:
+          type: integer
+          format: int64
+        source_url:
+          type: string
+          format: uri
+          example: https://example.com/blog/article
+        target_url:
+          type: string
+          format: uri
+          example: https://mysite.com/page
+        anchor_text:
+          type: string
+          example: click here
+        link_type:
+          $ref: '#/components/schemas/LinkType'
+
+    UpdateBacklinkRequest:
+      type: object
+      properties:
+        source_url:
+          type: string
+          format: uri
+        target_url:
+          type: string
+          format: uri
+        anchor_text:
+          type: string
+        status:
+          $ref: '#/components/schemas/LinkStatus'
+        link_type:
+          $ref: '#/components/schemas/LinkType'
+
+    BacklinkResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        project_id:
+          type: integer
+          format: int64
+        source_url:
+          type: string
+        target_url:
+          type: string
+        anchor_text:
+          type: string
+        status:
+          $ref: '#/components/schemas/LinkStatus'
+        link_type:
+          $ref: '#/components/schemas/LinkType'
+        http_status:
+          type: integer
+        last_checked_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    PaginatedBacklinks:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BacklinkResponse'
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+          format: int64
+        total_pages:
+          type: integer
+
+    BulkCreateBacklinksRequest:
+      type: object
+      required:
+        - backlinks
+      properties:
+        backlinks:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/CreateBacklinkRequest'
+
+    BulkDeleteBacklinksRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          maxItems: 100
+          items:
+            type: integer
+            format: int64
+
+    ImportFromSheetsRequest:
+      type: object
+      required:
+        - project_id
+        - google_sheet_id
+        - sheet_name
+      properties:
+        project_id:
+          type: integer
+          format: int64
+        google_sheet_id:
+          type: string
+        sheet_name:
+          type: string
+
+    BulkOperationResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        failed:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        details:
+          type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+
+    ReadyResponse:
+      type: object
+      properties:
+        status:
+          type: string

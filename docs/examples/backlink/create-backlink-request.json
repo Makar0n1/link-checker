@@ -1,0 +1,7 @@
+{
+  "project_id": 1,
+  "source_url": "https://example.com/blog/seo-tips",
+  "target_url": "https://mysite.com/services",
+  "anchor_text": "SEO services",
+  "link_type": "dofollow"
+}
