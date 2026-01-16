@@ -4,6 +4,81 @@
 
 ---
 
+### 2026-01-16 - Index Service + Health Service
+**Branch:** feature/backend/index-health-services
+**Status:** Done
+
+#### Index Service (порт 8083)
+Сервис проверки индексации URL в поисковых системах.
+
+Endpoints:
+- GET /api/v1/platforms - список платформ с пагинацией и фильтрами
+- POST /api/v1/platforms - добавить URL
+- GET /api/v1/platforms/{id} - получить платформу
+- PUT /api/v1/platforms/{id} - обновить платформу
+- DELETE /api/v1/platforms/{id} - удалить платформу
+- POST /api/v1/platforms/bulk - массовое добавление (до 100)
+- POST /api/v1/platforms/{id}/check - запустить проверку индексации
+- GET /health, /ready - health checks
+
+Database:
+- Таблица `platforms`: id, user_id, url, domain, index_status, is_indexed, first_indexed_at, last_checked_at, check_count, potential_score, is_must_have, notes, created_at, updated_at
+- ENUM тип: index_status (pending, indexed, not_indexed, error)
+
+#### Health Service (порт 8084)
+Сервис мониторинга здоровья сайтов.
+
+Endpoints:
+- GET /api/v1/sites - список сайтов
+- POST /api/v1/sites - добавить сайт
+- GET /api/v1/sites/{id} - получить сайт
+- PUT /api/v1/sites/{id} - обновить сайт
+- DELETE /api/v1/sites/{id} - удалить сайт
+- POST /api/v1/sites/{id}/check - запустить проверку здоровья
+- GET /api/v1/sites/{id}/history - история проверок
+- GET /health, /ready - health checks
+
+Database:
+- Таблица `monitored_sites`: id, user_id, url, domain, http_status, is_alive, response_time_ms, allows_indexing, robots_txt_status, has_noindex, pages_indexed, last_checked_at, created_at
+- Таблица `site_check_history`: id, site_id, http_status, is_alive, response_time_ms, checked_at
+
+#### Files
+Index Service:
+- services/index-service/go.mod
+- services/index-service/cmd/main.go
+- services/index-service/internal/config/config.go
+- services/index-service/internal/model/platform.go
+- services/index-service/internal/model/dto.go
+- services/index-service/internal/repository/platform_repository.go
+- services/index-service/internal/service/platform_service.go
+- services/index-service/internal/handler/platform_handler.go
+- services/index-service/internal/handler/health.go
+- services/index-service/migrations/001_init.up.sql
+- services/index-service/migrations/001_init.down.sql
+- services/index-service/Dockerfile
+
+Health Service:
+- services/health-service/go.mod
+- services/health-service/cmd/main.go
+- services/health-service/internal/config/config.go
+- services/health-service/internal/model/site.go
+- services/health-service/internal/model/dto.go
+- services/health-service/internal/repository/site_repository.go
+- services/health-service/internal/service/site_service.go
+- services/health-service/internal/handler/site_handler.go
+- services/health-service/internal/handler/health.go
+- services/health-service/migrations/001_init.up.sql
+- services/health-service/migrations/001_init.down.sql
+- services/health-service/Dockerfile
+
+Docs:
+- docs/api/index-service.yaml
+- docs/api/health-service.yaml
+- docs/examples/index/*.json
+- docs/examples/health/*.json
+
+---
+
 ### 2026-01-16 - Shared Go Module
 **Branch:** develop
 **Status:** Done

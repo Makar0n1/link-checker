@@ -1,0 +1,16 @@
+{
+  "id": 1,
+  "user_id": 1,
+  "url": "https://example.com/article/seo-guide",
+  "domain": "example.com",
+  "index_status": "pending",
+  "is_indexed": false,
+  "first_indexed_at": null,
+  "last_checked_at": null,
+  "check_count": 0,
+  "potential_score": 85,
+  "is_must_have": true,
+  "notes": "High authority domain, good for backlinks",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}

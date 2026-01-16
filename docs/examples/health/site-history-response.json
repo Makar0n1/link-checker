@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "site_id": 1,
+      "http_status": 200,
+      "is_alive": true,
+      "response_time_ms": 245,
+      "checked_at": "2024-01-15T14:00:00Z"
+    },
+    {
+      "id": 2,
+      "site_id": 1,
+      "http_status": 200,
+      "is_alive": true,
+      "response_time_ms": 312,
+      "checked_at": "2024-01-15T12:00:00Z"
+    },
+    {
+      "id": 1,
+      "site_id": 1,
+      "http_status": 503,
+      "is_alive": false,
+      "response_time_ms": 5000,
+      "checked_at": "2024-01-15T10:00:00Z"
+    }
+  ],
+  "page": 1,
+  "per_page": 20,
+  "total": 3,
+  "total_pages": 1
+}

@@ -1,0 +1,8 @@
+{
+  "platform_id": 1,
+  "url": "https://example.com/article/seo-guide",
+  "http_status": 200,
+  "is_indexed": true,
+  "index_status": "indexed",
+  "checked_at": "2024-01-15T14:00:00Z"
+}

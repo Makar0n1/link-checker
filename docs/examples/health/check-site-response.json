@@ -1,0 +1,11 @@
+{
+  "site_id": 1,
+  "url": "https://mysite.com",
+  "http_status": 200,
+  "is_alive": true,
+  "response_time_ms": 245,
+  "allows_indexing": true,
+  "robots_txt_status": "allow",
+  "has_noindex": false,
+  "checked_at": "2024-01-15T14:00:00Z"
+}

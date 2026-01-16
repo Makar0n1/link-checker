@@ -1,0 +1,14 @@
+{
+  "platforms": [
+    {
+      "url": "https://site1.com/article",
+      "potential_score": 70,
+      "is_must_have": false
+    },
+    {
+      "url": "https://site2.com/blog",
+      "potential_score": 90,
+      "is_must_have": true
+    }
+  ]
+}
