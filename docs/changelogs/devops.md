@@ -4,6 +4,26 @@
 
 ---
 
+### 2026-01-16 - Dockerfile для сервисов
+**Branch:** feature/devops/dockerize-services
+**Status:** Done
+
+#### Что сделано
+- Создан Dockerfile для auth-service (multi-stage build, Go 1.22)
+- Создан Dockerfile для backlink-service (с поддержкой shared модуля)
+- Обновлён docker-compose.yml — раскомментированы auth-service и backlink-service
+- Добавлены health checks для Go сервисов (endpoint /health)
+- Добавлены environment переменные для сервисов
+- Настроены depends_on с условием service_healthy
+- Удалён deprecated атрибут version из docker-compose.yml
+
+#### Файлы
+- services/auth-service/Dockerfile
+- services/backlink-service/Dockerfile
+- docker-compose.yml
+
+---
+
 ### 2026-01-16 - Инициализация репозитория
 **Branch:** main
 **Status:** Done

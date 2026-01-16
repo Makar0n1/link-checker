@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # =============================================================================
   # Infrastructure
@@ -44,7 +42,7 @@ services:
       - linktracker-network
 
   # =============================================================================
-  # Services (will be added later)
+  # Services
   # =============================================================================
 
   # api-gateway:
@@ -59,29 +57,69 @@ services:
   #   networks:
   #     - linktracker-network
 
-  # auth-service:
-  #   build:
-  #     context: ./services/auth-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   networks:
-  #     - linktracker-network
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: linktracker-auth-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: "8081"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${POSTGRES_USER:-linktracker}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-linktracker_secret}
+      DB_NAME: ${POSTGRES_DB:-linktracker}
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - linktracker-network
 
-  # backlink-service:
-  #   build:
-  #     context: ./services/backlink-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8082:8082"
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   networks:
-  #     - linktracker-network
+  backlink-service:
+    build:
+      context: .
+      dockerfile: ./services/backlink-service/Dockerfile
+    container_name: linktracker-backlink-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: "8082"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${POSTGRES_USER:-linktracker}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-linktracker_secret}
+      DB_NAME: ${POSTGRES_DB:-linktracker}
+      DB_SSLMODE: disable
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - linktracker-network
 
   # index-service:
   #   build:
