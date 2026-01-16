@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,19 +13,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LayoutDashboard } from "lucide-react";
+import { useLogin } from "@/hooks/use-auth";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const loginMutation = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Mock login - set auth cookie and redirect to dashboard
-    setTimeout(() => {
-      document.cookie = "auth-token=mock-token; path=/; max-age=86400";
-      router.push("/backlinks");
-    }, 1000);
+    loginMutation.mutate({ email, password });
   };
 
   return (
@@ -48,6 +44,9 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="john@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loginMutation.isPending}
               required
             />
           </div>
@@ -55,10 +54,21 @@ export default function LoginPage() {
             <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
-            <Input id="password" type="password" required />
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loginMutation.isPending}
+              required
+            />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loginMutation.isPending}
+          >
+            {loginMutation.isPending ? "Signing in..." : "Sign in"}
           </Button>
         </form>
       </CardContent>

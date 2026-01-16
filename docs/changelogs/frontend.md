@@ -4,6 +4,46 @@
 
 ---
 
+### 2026-01-16 - Интеграция с Backend API
+**Branch:** feature/frontend/api-integration
+**Status:** Done
+
+#### Что сделано
+- Создан API клиент с управлением токенами (access_token, refresh_token)
+- Автоматический refresh токена при истечении
+- Хранение токенов в localStorage + cookie для middleware
+- React Query hooks для аутентификации (useLogin, useRegister, useLogout, useCurrentUser)
+- React Query hooks для проектов (useProjects, useCreateProject, useUpdateProject, useDeleteProject)
+- React Query hooks для бэклинков (useBacklinks, useCreateBacklink, useUpdateBacklink, useDeleteBacklink, useBulkCreateBacklinks, useBulkDeleteBacklinks)
+- Интеграция login/register страниц с реальным API
+- Интеграция backlinks страницы с реальным API (загрузка, фильтрация, пагинация, CRUD)
+- Интеграция logout с реальным API
+- Добавлен QueryClientProvider для React Query
+- Добавлен компонент Select от shadcn/ui
+- Типы для API (User, Project, Backlink, и др.)
+- Конфигурация .env.local для API endpoints
+
+#### Файлы
+- frontend/web-app/src/lib/api/client.ts (API клиент)
+- frontend/web-app/src/lib/api/auth.ts (Auth API)
+- frontend/web-app/src/lib/api/projects.ts (Projects API)
+- frontend/web-app/src/lib/api/backlinks.ts (Backlinks API)
+- frontend/web-app/src/hooks/use-auth.ts (Auth hooks)
+- frontend/web-app/src/hooks/use-projects.ts (Projects hooks)
+- frontend/web-app/src/hooks/use-backlinks.ts (Backlinks hooks)
+- frontend/web-app/src/types/api.ts (API типы)
+- frontend/web-app/src/components/providers.tsx (QueryClientProvider)
+- frontend/web-app/src/app/layout.tsx (providers integration)
+- frontend/web-app/src/app/(auth)/login/page.tsx (API integration)
+- frontend/web-app/src/app/(auth)/register/page.tsx (API integration)
+- frontend/web-app/src/app/(dashboard)/backlinks/page.tsx (API integration)
+- frontend/web-app/src/components/layout/header.tsx (logout API)
+- frontend/web-app/src/components/tables/backlinks-columns.tsx (new API types)
+- frontend/web-app/.env.local
+- frontend/web-app/.env.example
+
+---
+
 ### 2026-01-16 - Landing Page и Auth Guard
 **Branch:** feature/frontend/ui-setup
 **Status:** Done

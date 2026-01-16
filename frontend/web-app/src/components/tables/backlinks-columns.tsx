@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Backlink } from "@/types";
+import type { Backlink } from "@/types/api";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 import { EditableCell } from "./editable-cell";
 
 interface CreateColumnsOptions {
-  onUpdateBacklink: (id: string, field: keyof Backlink, value: string) => void;
+  onUpdateBacklink: (id: number, field: keyof Backlink, value: string) => void;
 }
 
 export function createBacklinksColumns({
@@ -39,7 +39,7 @@ export function createBacklinksColumns({
       enableHiding: false,
     },
     {
-      accessorKey: "sourceUrl",
+      accessorKey: "source_url",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -50,7 +50,7 @@ export function createBacklinksColumns({
         </Button>
       ),
       cell: ({ row }) => {
-        const url = row.getValue("sourceUrl") as string;
+        const url = row.getValue("source_url") as string;
         return (
           <div className="flex items-center gap-2">
             <a
@@ -68,10 +68,10 @@ export function createBacklinksColumns({
       },
     },
     {
-      accessorKey: "targetUrl",
+      accessorKey: "target_url",
       header: "Target URL",
       cell: ({ row }) => {
-        const url = row.getValue("targetUrl") as string;
+        const url = row.getValue("target_url") as string;
         return (
           <span className="max-w-[150px] truncate" title={url}>
             {url.replace(/^https?:\/\//, "")}
@@ -80,14 +80,14 @@ export function createBacklinksColumns({
       },
     },
     {
-      accessorKey: "anchorText",
+      accessorKey: "anchor_text",
       header: "Anchor Text",
       cell: ({ row }) => {
         const backlink = row.original;
         return (
           <EditableCell
-            value={backlink.anchorText}
-            onSave={(value) => onUpdateBacklink(backlink.id, "anchorText", value)}
+            value={backlink.anchor_text}
+            onSave={(value) => onUpdateBacklink(backlink.id, "anchor_text", value)}
           />
         );
       },
@@ -97,16 +97,15 @@ export function createBacklinksColumns({
       header: "Status",
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
+        const variants: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
+          active: "default",
+          pending: "secondary",
+          broken: "destructive",
+          removed: "destructive",
+          nofollow: "outline",
+        };
         return (
-          <Badge
-            variant={
-              status === "active"
-                ? "default"
-                : status === "lost"
-                  ? "destructive"
-                  : "secondary"
-            }
-          >
+          <Badge variant={variants[status] || "secondary"}>
             {status}
           </Badge>
         );
@@ -116,47 +115,40 @@ export function createBacklinksColumns({
       },
     },
     {
-      accessorKey: "dofollow",
+      accessorKey: "link_type",
       header: "Type",
       cell: ({ row }) => {
-        const dofollow = row.getValue("dofollow") as boolean;
+        const linkType = row.getValue("link_type") as string;
         return (
-          <Badge variant={dofollow ? "default" : "outline"}>
-            {dofollow ? "dofollow" : "nofollow"}
+          <Badge variant={linkType === "dofollow" ? "default" : "outline"}>
+            {linkType}
           </Badge>
         );
       },
     },
     {
-      accessorKey: "domainAuthority",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          DA
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      accessorKey: "http_status",
+      header: "HTTP",
       cell: ({ row }) => {
-        const da = row.getValue("domainAuthority") as number;
+        const httpStatus = row.getValue("http_status") as number | null;
+        if (!httpStatus) return <span className="text-muted-foreground">-</span>;
         return (
           <span
             className={`font-medium ${
-              da >= 60
+              httpStatus >= 200 && httpStatus < 300
                 ? "text-green-600"
-                : da >= 40
-                  ? "text-yellow-600"
-                  : "text-muted-foreground"
+                : httpStatus >= 400
+                  ? "text-red-600"
+                  : "text-yellow-600"
             }`}
           >
-            {da}
+            {httpStatus}
           </span>
         );
       },
     },
     {
-      accessorKey: "lastChecked",
+      accessorKey: "last_checked_at",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -167,7 +159,9 @@ export function createBacklinksColumns({
         </Button>
       ),
       cell: ({ row }) => {
-        const date = new Date(row.getValue("lastChecked") as string);
+        const dateStr = row.getValue("last_checked_at") as string | null;
+        if (!dateStr) return <span className="text-muted-foreground">Never</span>;
+        const date = new Date(dateStr);
         return (
           <span className="text-muted-foreground">
             {date.toLocaleDateString()}
