@@ -1,5 +1,5 @@
-const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:8080';
-const BACKLINK_SERVICE_URL = process.env.BACKLINK_SERVICE_URL || 'http://localhost:8081';
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:8081';
+const BACKLINK_SERVICE_URL = process.env.BACKLINK_SERVICE_URL || 'http://localhost:8082';
 
 interface RequestOptions {
   method?: string;
@@ -81,29 +81,29 @@ export const authApi = {
 // Backlink Service API
 export const backlinkApi = {
   // Projects
-  createProject: (token: string, data: { name: string; url?: string }) =>
-    request<{ id: number; user_id: number; name: string; url: string; created_at: string; updated_at: string }>(
+  createProject: (token: string, data: { name: string; google_sheet_id?: string }) =>
+    request<{ id: number; user_id: number; name: string; google_sheet_id?: string; created_at: string }>(
       BACKLINK_SERVICE_URL,
       '/api/v1/projects',
       { method: 'POST', body: data, token }
     ),
 
   listProjects: (token: string) =>
-    request<Array<{ id: number; user_id: number; name: string; url: string; created_at: string; updated_at: string }>>(
+    request<Array<{ id: number; user_id: number; name: string; google_sheet_id?: string; created_at: string }>>(
       BACKLINK_SERVICE_URL,
       '/api/v1/projects',
       { token }
     ),
 
   getProject: (token: string, id: number) =>
-    request<{ id: number; user_id: number; name: string; url: string; created_at: string; updated_at: string }>(
+    request<{ id: number; user_id: number; name: string; google_sheet_id?: string; created_at: string }>(
       BACKLINK_SERVICE_URL,
       `/api/v1/projects/${id}`,
       { token }
     ),
 
-  updateProject: (token: string, id: number, data: { name?: string; url?: string }) =>
-    request<{ id: number; user_id: number; name: string; url: string; created_at: string; updated_at: string }>(
+  updateProject: (token: string, id: number, data: { name?: string; google_sheet_id?: string }) =>
+    request<{ id: number; user_id: number; name: string; google_sheet_id?: string; created_at: string }>(
       BACKLINK_SERVICE_URL,
       `/api/v1/projects/${id}`,
       { method: 'PUT', body: data, token }
@@ -194,14 +194,14 @@ export const backlinkApi = {
       backlinks: Array<{ project_id: number; source_url: string; target_url: string; anchor_text?: string }>;
     }
   ) =>
-    request<{ created: number; failed: number; errors?: string[] }>(
+    request<{ success: number; failed: number; errors?: string[] }>(
       BACKLINK_SERVICE_URL,
       '/api/v1/backlinks/bulk',
       { method: 'POST', body: data, token }
     ),
 
   bulkDeleteBacklinks: (token: string, data: { ids: number[] }) =>
-    request<{ deleted: number; failed: number }>(
+    request<{ success: number; failed: number }>(
       BACKLINK_SERVICE_URL,
       '/api/v1/backlinks/bulk',
       { method: 'DELETE', body: data, token }
@@ -234,7 +234,6 @@ export async function createTestUser(): Promise<{ email: string; password: strin
 export async function createTestProject(token: string): Promise<number> {
   const result = await backlinkApi.createProject(token, {
     name: `Test Project ${Date.now()}`,
-    url: 'https://example.com',
   });
   return result.data.id;
 }

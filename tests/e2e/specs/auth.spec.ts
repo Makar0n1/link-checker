@@ -44,7 +44,7 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]');
 
     // Should show toast error about mismatched passwords
-    await expect(page.getByText("Passwords don't match")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Passwords don't match", { exact: true })).toBeVisible({ timeout: 5000 });
   });
 
   test('should show error for short password', async ({ page }) => {
@@ -80,7 +80,7 @@ test.describe('Authentication', () => {
 
     // Should redirect to backlinks dashboard
     await expect(page).toHaveURL('/backlinks', { timeout: 10000 });
-    await expect(page.getByText('Backlinks')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Backlinks' })).toBeVisible();
   });
 
   test('should show error for wrong password', async ({ page }) => {
@@ -90,7 +90,7 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]');
 
     // Should show toast error
-    await expect(page.getByText('Login failed')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Login failed', { exact: true })).toBeVisible({ timeout: 5000 });
   });
 
   test('should protect dashboard routes', async ({ page }) => {
@@ -133,11 +133,11 @@ test.describe('Authentication', () => {
 
     await expect(page).toHaveURL('/backlinks', { timeout: 10000 });
 
-    // Now test logout - click on user icon dropdown
-    await page.click('button:has([data-lucide="user"])');
+    // Now test logout - click on user icon dropdown (second button with icon in header)
+    await page.locator('header button').last().click();
 
     // Wait for dropdown to appear and click logout
-    await page.click('text=Log out');
+    await page.getByRole('menuitem', { name: 'Log out' }).click();
 
     // Should redirect to login
     await expect(page).toHaveURL('/login', { timeout: 10000 });

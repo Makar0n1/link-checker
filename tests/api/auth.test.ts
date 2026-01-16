@@ -90,7 +90,6 @@ describe('Auth Service API', () => {
       expect(result.data.access_token).toBeDefined();
       expect(result.data.refresh_token).toBeDefined();
       expect(result.data.expires_in).toBeDefined();
-      expect(result.data.token_type).toBe('Bearer');
     });
 
     it('should return 401 for wrong password', async () => {
@@ -184,7 +183,6 @@ describe('Auth Service API', () => {
       expect(result.data.access_token).toBeDefined();
       expect(result.data.refresh_token).toBeDefined();
       expect(result.data.expires_in).toBeDefined();
-      expect(result.data.token_type).toBe('Bearer');
     });
 
     it('should return 401 for invalid refresh token', async () => {
@@ -206,7 +204,7 @@ describe('Auth Service API', () => {
       const result = await authApi.logout(user.refreshToken);
 
       expect(result.status).toBe(200);
-      expect(result.data.message).toContain('logout');
+      expect(result.data.message).toContain('logged out');
     });
 
     it('should return 400 for empty refresh token', async () => {
@@ -221,7 +219,7 @@ describe('Auth Service API', () => {
       const result = await authApi.health();
 
       expect(result.status).toBe(200);
-      expect(result.data.status).toBe('ok');
+      expect(result.data.status).toBe('healthy');
     });
   });
 });

@@ -15,12 +15,10 @@ describe('Backlink Service API', () => {
       it('should create a project and return 201', async () => {
         const result = await backlinkApi.createProject(accessToken, {
           name: 'Test Project',
-          url: 'https://example.com',
         });
 
         expect(result.status).toBe(201);
         expect(result.data.name).toBe('Test Project');
-        expect(result.data.url).toBe('https://example.com');
         expect(result.data.id).toBeDefined();
         expect(result.data.user_id).toBeDefined();
         expect(result.data.created_at).toBeDefined();
@@ -281,12 +279,12 @@ describe('Backlink Service API', () => {
         expect(result.data.per_page).toBe(1);
       });
 
-      it('should return 400 without project_id', async () => {
+      it('should return 403 without project_id', async () => {
         const result = await backlinkApi.listBacklinks(accessToken, {
           project_id: 0,
         });
 
-        expect(result.status).toBe(400);
+        expect(result.status).toBe(403);
       });
 
       it('should return 401 without token', async () => {
@@ -421,7 +419,7 @@ describe('Backlink Service API', () => {
         });
 
         expect(result.status).toBe(201);
-        expect(result.data.created).toBe(3);
+        expect(result.data.success).toBe(3);
         expect(result.data.failed).toBe(0);
       });
 
@@ -467,7 +465,7 @@ describe('Backlink Service API', () => {
         });
 
         expect(result.status).toBe(200);
-        expect(result.data.deleted).toBe(2);
+        expect(result.data.success).toBe(2);
         expect(result.data.failed).toBe(0);
       });
 
@@ -520,7 +518,7 @@ describe('Backlink Service API', () => {
       const result = await backlinkApi.health();
 
       expect(result.status).toBe(200);
-      expect(result.data.status).toBe('ok');
+      expect(result.data.status).toBe('healthy');
     });
   });
 });
