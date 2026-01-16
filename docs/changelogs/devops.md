@@ -4,6 +4,32 @@
 
 ---
 
+### 2026-01-16 - CI/CD Pipeline + Frontend Docker
+**Branch:** feature/devops/ci-frontend
+**Status:** Done
+
+#### Что сделано
+- Создан GitHub Actions CI Pipeline (.github/workflows/ci.yml)
+  - Backend lint и тесты (Go 1.22, golangci-lint)
+  - Frontend lint, type check, build (Node 20)
+  - Docker build для всех сервисов
+- Создан Dockerfile для frontend (Next.js standalone, multi-stage)
+- Обновлён next.config.mjs — добавлен output: 'standalone'
+- Добавлен frontend в docker-compose.yml
+- Создан nginx как API Gateway (infrastructure/nginx/nginx.conf)
+  - /api/v1/auth/* → auth-service:8081
+  - /api/v1/projects/, /api/v1/backlinks/ → backlink-service:8082
+  - /* → frontend:3000
+
+#### Файлы
+- .github/workflows/ci.yml
+- frontend/web-app/Dockerfile
+- frontend/web-app/next.config.mjs
+- docker-compose.yml
+- infrastructure/nginx/nginx.conf
+
+---
+
 ### 2026-01-16 - Dockerfile для сервисов
 **Branch:** feature/devops/dockerize-services
 **Status:** Done
