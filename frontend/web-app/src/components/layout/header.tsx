@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Bell, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export function Header() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    document.cookie = "auth-token=; path=/; max-age=0";
+    router.push("/login");
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-6">
       <div className="flex items-center gap-4">
@@ -70,7 +78,10 @@ export function Header() {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={handleLogout}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>

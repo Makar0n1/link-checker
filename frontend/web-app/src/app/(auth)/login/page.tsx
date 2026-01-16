@@ -22,8 +22,9 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock login - redirect to dashboard
+    // Mock login - set auth cookie and redirect to dashboard
     setTimeout(() => {
+      document.cookie = "auth-token=mock-token; path=/; max-age=86400";
       router.push("/backlinks");
     }, 1000);
   };

@@ -4,6 +4,25 @@
 
 ---
 
+### 2026-01-16 - Landing Page и Auth Guard
+**Branch:** feature/frontend/ui-setup
+**Status:** Done
+
+#### Что сделано
+- Создана публичная Landing Page с Hero, Features и CTA секциями
+- Добавлен Auth Guard middleware для защиты dashboard роутов
+- Login устанавливает auth-token cookie после успешной авторизации
+- Logout очищает cookie и редиректит на /login
+- Dashboard доступен только авторизованным пользователям
+
+#### Файлы
+- frontend/web-app/src/app/page.tsx (Landing Page)
+- frontend/web-app/src/middleware.ts (Auth Guard)
+- frontend/web-app/src/app/(auth)/login/page.tsx (cookie set)
+- frontend/web-app/src/components/layout/header.tsx (logout)
+
+---
+
 ### 2026-01-16 - UI Kit и базовый Layout
 **Branch:** feature/frontend/ui-setup
 **Status:** Done
